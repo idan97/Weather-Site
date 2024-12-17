@@ -1,19 +1,17 @@
-import { useState , createContext } from "react";
+import { useState } from "react";
 import SearchBar from "./components/SearchBar";
 import Sidebar from "./components/Sidebar";
+import WeatherList from "./components/WeatherList";
 import axios from "axios";
 
-interface WeatherData {
-  location: {
-    name: string;
-    region: string;
-    country: string;
-  };
-  current: {
-    temp_c: number;
+interface ForecastDay {
+  date: string;
+  day: {
+    maxtemp_c: number;
+    mintemp_c: number;
     condition: {
-      text: string;
       icon: string;
+      text: string;
     };
   };
 }
@@ -24,67 +22,67 @@ export interface Location {
 }
 
 function App() {
-  const [selectedLocation, setSelectedLocation] = useState<Location>({city: "", country: ""});
-  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
-  const [favorites, setFavorites] = useState<string[]>([]);
-  const weatherContext = createContext(weatherData);
+  const [selectedLocation, setSelectedLocation] = useState<Location>({
+    city: "",
+    country: "",
+  });
+  const [forecast, setForecast] = useState<ForecastDay[]>([]);
+  const [favorites, setFavorites] = useState<Location[]>([]);
   const WEATHER_API_KEY = "e2265aa018c54adfbd2190538240812";
 
   const fetchWeather = async (selectedCity: string) => {
     try {
-      console.log("Fetching weather data for", selectedCity);
       const response = await axios.get(
-        `https://api.weatherapi.com/v1/current.json`,
+        `https://api.weatherapi.com/v1/forecast.json`,
         {
-
           params: {
             key: WEATHER_API_KEY,
             q: selectedCity,
+            days: 10, // Fetch 10-day forecast
           },
         }
       );
-      console.log("Weather data:", response.data);
-      setWeatherData(response.data);
+      setForecast(response.data.forecast.forecastday);
     } catch (error) {
-      console.log("Error fetching weather data:", error);
+      console.error("Error fetching weather data:", error);
     }
   };
 
-  const handleLocationSelect = (selectedCity: string, selectedCountry: string) => {
-    setSelectedLocation({city: selectedCity, country: selectedCountry});
-    fetchWeather(selectedCity);
+  const handleLocationSelect = (location: Location) => {
+    setSelectedLocation(location);
+    fetchWeather(location.city);
+  };
+
+  const handleAddToFavorites = () => {
+    if (
+      selectedLocation.city &&
+      !favorites.some(
+        (fav) =>
+          fav.city === selectedLocation.city &&
+          fav.country === selectedLocation.country
+      )
+    ) {
+      setFavorites((prevFavorites) => [...prevFavorites, selectedLocation]);
+    }
   };
 
   return (
-    <>
-      <h1>Weather App</h1>
-      <SearchBar setSelectedLocation={handleLocationSelect} selectedLocation={selectedLocation}/>
-      <p>
-        {selectedLocation.city && selectedLocation.country ? `Showing weather for ${selectedLocation.city}, ${selectedLocation.country}` : "No city selected"}
-      </p>
-
-      {weatherData && (
-        <div>
-          <h2>Weather in {weatherData.location.name}</h2>
-          <p>
-            <strong>Region:</strong> {weatherData.location.region}
-          </p>
-          <p>
-            <strong>Country:</strong> {weatherData.location.country}
-          </p>
-          <p>
-            <strong>Temperature:</strong> {weatherData.current.temp_c}°C
-          </p>
-          <p>
-            <strong>Condition:</strong> {weatherData.current.condition.text}
-          </p>
-          <img
-            src={weatherData.current.condition.icon}
-            alt={weatherData.current.condition.text}
-          />
-        </div>
-      )}
-    </>
+    <div className="app-container">
+      <Sidebar favorites={favorites} onSelectFavorite={handleLocationSelect}  />
+      <div className="main-content">
+        <SearchBar
+          setSelectedLocation={handleLocationSelect}
+          selectedLocation={selectedLocation}
+        />
+        <h1>Weather App</h1>
+        <p>
+          {selectedLocation.city && selectedLocation.country
+            ? `Showing 10-day forecast for ${selectedLocation.city}, ${selectedLocation.country}`
+            : "No city selected"}
+        </p>
+        <WeatherList forecast={forecast} />
+      </div>
+    </div>
   );
 }
 

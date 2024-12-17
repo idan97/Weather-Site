@@ -7,7 +7,7 @@ import { Location } from "../App";
 
 interface SearchBarProps {
   selectedLocation: Location;
-  setSelectedLocation: (city: string, country: string) => void;
+  setSelectedLocation: (location : Location) => void;
 }
 
 const WEATHER_API_KEY = "e2265aa018c54adfbd2190538240812";
@@ -55,7 +55,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
   const handleCitySelect = (city: string, country: string) => {
     setCurrSearch(`${city}, ${country}`);
-    setSelectedLocation(city, country);
+    setSelectedLocation({ city, country });
     setShowSuggestions(false);
   };
 

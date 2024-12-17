@@ -1,12 +1,6 @@
 import React from "react";
 import "../styles/Sidebar.css";
 import { Location } from "../App";
-import FavoriteLocation from "./FavoriteLocation";
-
-interface SidebarProps {
-  favorites: Location[];
-  onSelectFavorite: (location: Location) => void;
-}
 
 interface FavoriteLocationProps {
   location: Location;
@@ -14,21 +8,24 @@ interface FavoriteLocationProps {
 }
 
 const FavoriteLocation: React.FC<FavoriteLocationProps> = ({
-    location,
-    onSelectFavorite,
-  }) => {
-    return (
-      <div
-        className="favorite-location"
-        onClick={() => onSelectFavorite(location)}
-      >
-        <p>
-          {location.city}, {location.country}
-        </p>
-      </div>
-    );
-  };
-  
+  location,
+  onSelectFavorite,
+}) => {
+  return (
+    <div
+      className="favorite-location"
+      onClick={() => onSelectFavorite(location)}
+    >
+      <p>
+        {location.city}, {location.country}
+      </p>
+    </div>
+  );
+};
+interface SidebarProps {
+  favorites: Location[];
+  onSelectFavorite: (location: Location) => void;
+}
 
 const Sidebar: React.FC<SidebarProps> = ({ favorites, onSelectFavorite }) => {
   return (

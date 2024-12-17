@@ -1,8 +1,7 @@
 .search-bar-container {
   position: absolute;
-  top: 0;
-  right: 0;
-  margin: 20px;
+  top: 20px;
+  right: 20px;
 }
 
 .input-container {
@@ -19,12 +18,12 @@
   outline: none;
   width: 220px;
   font-size: 16px;
-  padding-left: 4px ;
+  padding-left: 4px;
 }
 
 .suggestions-list {
-  position: absolute; 
-  top: 100%; 
+  position: absolute;
+  top: 100%;
   left: 0;
   right: 0;
   border: 1px solid #ccc;
@@ -32,10 +31,10 @@
   background-color: #fff;
   overflow-y: scroll;
   max-height: 220px;
-  z-index: 1000; 
+  z-index: 1000;
   padding: 0;
   list-style: none;
-  margin: 0; /* Ensure no additional margins */
+  margin: 0;
 }
 
 .suggestion-item {
